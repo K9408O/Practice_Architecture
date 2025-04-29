@@ -1,0 +1,86 @@
+﻿@model Architecture.Common.DTO.RegisterDto
+
+<h2>會員註冊</h2>
+
+<form id="registerForm">
+    <div>
+        <label>姓名：</label>
+        <input type="text" id="Name" name="Name" />
+    </div>
+    <div>
+        <label>手機：</label>
+        <input type="text" id="Phone" name="Phone" />
+    </div>
+    <div>
+        <label>市話：</label>
+        <input type="text" id="Tel" name="Tel" />
+    </div>
+    <div>
+        <label>性別：</label>
+        <select id="Gender" name="Gender">
+            <option value="M">男</option>
+            <option value="F">女</option>
+        </select>
+    </div>
+    <div>
+        <label>生日：</label>
+        <input type="date" id="Birthday" name="Birthday" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">送出</button>
+</form>
+
+<div id="result"></div>
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.13/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $('#registerForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+
+            const data = {
+                name: $form.find('[name="Name"]').val().trim(),
+                phone: $form.find('[name="Phone"]').val().trim(),
+                tel: $form.find('[name="Tel"]').val().trim(),
+                gender: $form.find('[name="Gender"]').val(),
+                birthday: $form.find('[name="Birthday"]').val()
+            };
+
+            $.ajax({
+                url: 'https://localhost:44362/api/member/register', // ✅ POST API
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (res) {
+                    $('#result').text(res.message || '註冊成功').css('color', 'green');
+                },
+                error: function (xhr) {
+                    let msg = '註冊失敗'; // 預設訊息
+
+                    try {
+                        // 優先取 responseJSON.message
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        // 如果沒有 responseJSON，試著用 responseText 解析
+                        else if (xhr.responseText) {
+                            const parsed = JSON.parse(xhr.responseText);
+                            if (parsed.message) {
+                                msg = parsed.message;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('錯誤訊息解析失敗', e);
+                    }
+
+                    $('#result').text(msg).css('color', 'red');
+                }
+            });
+        });
+
+    </script>
+}
