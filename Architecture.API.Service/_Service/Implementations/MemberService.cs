@@ -41,5 +41,18 @@ namespace Architecture.API.Service._Service.Implementations
             await _repo.AddAsync(member, ct);
             return member.Id;
         }
+        //單一搜尋
+        public async Task<Member> GetByPhoneAsync(string phone, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(phone))
+                throw new ArgumentException("手機號碼不可空白");
+
+            phone = phone.Trim(); // ★重要！去掉前後空白
+
+            return await _repo.GetByPhoneAsync(phone, ct);
+        }
+
+
+
     }
 }

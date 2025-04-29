@@ -57,5 +57,43 @@ namespace Architecture.API.Repository._Repository.Implementations
 
             return result;
         }
+        //單一查詢
+        public async Task<Member> GetByPhoneAsync(string phone, CancellationToken ct = default)
+        {
+            Console.WriteLine($"🔍 查詢 Phone = '{phone}'");
+            const string sql = @"
+        SELECT TOP 1 Id, Name, Phone, Tel, Gender, Birthday
+        FROM Member
+        WHERE Phone = @Phone";
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                await conn.OpenAsync(ct);
+
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.Add("@Phone", SqlDbType.NVarChar).Value = phone;
+
+                    using (var reader = await cmd.ExecuteReaderAsync(ct))
+                    {
+                        if (await reader.ReadAsync(ct))
+                        {
+                            return new Member
+                            {
+                                Id = reader.GetGuid(0),
+                                Name = reader.GetString(1),
+                                Phone = reader.GetString(2),
+                                Tel = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                Gender = reader.GetString(4),
+                                Birthday = reader.GetDateTime(5)
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+
     }
 }

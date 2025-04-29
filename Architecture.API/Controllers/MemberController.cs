@@ -68,5 +68,38 @@ namespace Architecture.API.Controllers
                 return Content(HttpStatusCode.InternalServerError, new { message = ex.Message });
             }
         }
+
+        [HttpPost]
+        [Route("search")]
+        public async Task<IHttpActionResult> Search(SearchDto dto, CancellationToken ct = default)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var member = await _service.GetByPhoneAsync(dto.Phone, ct);
+                if (member == null)
+                    return NotFound();
+
+                return Ok(new MemberDto
+                {
+                    Id = member.Id,
+                    Name = member.Name,
+                    Phone = member.Phone,
+                    Tel = member.Tel,
+                    Gender = member.Gender,
+                    Birthday = member.Birthday
+                });
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, new { message = ex.Message });
+            }
+        }
+
+
+
+
     }
 }

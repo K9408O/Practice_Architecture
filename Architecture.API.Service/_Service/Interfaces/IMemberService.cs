@@ -11,6 +11,8 @@ namespace Architecture.API.Service._Service.Interfaces
 {
     public interface IMemberService
     {
+        Task<Member> GetByPhoneAsync(string phone, CancellationToken ct = default);
         Task<Guid> RegisterAsync(RegisterDto dto, CancellationToken ct = default);
+
     }
 }
