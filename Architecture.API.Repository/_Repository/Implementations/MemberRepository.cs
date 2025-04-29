@@ -94,6 +94,38 @@ namespace Architecture.API.Repository._Repository.Implementations
             return null;
         }
 
+        /// <summary>
+        /// 取得所有會員資料 結構跟上面基本一樣，就不多打註解
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async Task<List<Member>> GetAllAsync(CancellationToken ct = default)
+        {
+            const string sql = @"SELECT Id, Name, Phone, Tel, Gender, Birthday FROM Member ORDER BY Name";
+
+            var list = new List<Member>();
+            using (var conn = new SqlConnection(_connStr))
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                await conn.OpenAsync(ct);
+                using (var rdr = await cmd.ExecuteReaderAsync(ct))
+                {
+                    while (rdr.Read())
+                    {
+                        list.Add(new Member
+                        {
+                            Id = rdr.GetGuid(0),
+                            Name = rdr.GetString(1),
+                            Phone = rdr.GetString(2),
+                            Tel = rdr.IsDBNull(3) ? null : rdr.GetString(3),
+                            Gender = rdr.GetString(4),
+                            Birthday = rdr.GetDateTime(5)
+                        });
+                    }
+                }
+            }
+            return list;
+        }
 
     }
 }

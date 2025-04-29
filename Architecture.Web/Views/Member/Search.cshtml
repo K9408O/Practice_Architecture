@@ -1,16 +1,35 @@
 ﻿@model Architecture.Common.DTO.SearchDto
 
-<h2>單一會員查詢</h2>
+<h2>會員查詢</h2>
 
 <form id="searchForm">
+    <!-- 查詢全部會員按鈕 -->
+    <button id="btnLoadAll" class="btn btn-primary mt-3">查詢全部會員</button>
+
     <div>
         <label>手機：</label>
         <input type="text" id="Phone" name="Phone" maxlength="10" />
     </div>
     <button type="submit" class="btn btn-primary">查詢</button>
+
 </form>
 
 <div id="searchResult" class="mt-3"></div>
+
+<table class="table table-bordered table-hover mt-3">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>手機</th>
+            <th>市話</th>
+            <th>性別</th>
+            <th>生日</th>
+        </tr>
+    </thead>
+    <tbody id="allMembersBody">
+        <!-- 這裡放動態生成的會員資料 -->
+    </tbody>
+</table>
 
 @section scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -22,7 +41,7 @@
     $('#searchForm').on('submit', function (e) {
         e.preventDefault();
         const phone = $('#Phone').val().trim();
-
+        console.log("送出的 Phone：", phone);
         $.ajax({
             url: `${apiBase}/api/member/search`,
             method: 'POST',
@@ -47,6 +66,36 @@
             }
         });
     });
-})();
+        })();
+        //搜尋全部
+        $(function () {
+            $('#btnLoadAll').click(function () {
+                $.ajax({
+                    url: 'https://localhost:44362/api/member/all', // ✅ API 地址
+                    type: 'GET',
+                    success: function (members) {
+                        var rows = '';
+                        if (members.length === 0) {
+                            rows = '<tr><td colspan="5" class="text-center">目前沒有資料</td></tr>';
+                        } else {
+                            members.forEach(function (m) {
+                                rows += `
+                                <tr>
+                                    <td>${m.Name}</td>
+                                    <td>${m.Phone}</td>
+                                    <td>${m.Tel || ''}</td>
+                                    <td>${m.Gender}</td>
+                                    <td>${m.Birthday ? m.Birthday.substring(0, 10) : ''}</td>
+                                </tr>`;
+                            });
+                        }
+                        $('#allMembersBody').html(rows);
+                    },
+                    error: function () {
+                        alert('載入失敗！');
+                    }
+                });
+            });
+        });
     </script>
 }

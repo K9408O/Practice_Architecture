@@ -13,5 +13,6 @@ namespace Architecture.API.Repository._Repository.Interface
         Task<int> AddAsync(Member member, CancellationToken ct = default);
         Task<bool> ExistsPhoneAsync(string phone, CancellationToken ct = default);
         Task<Member> GetByPhoneAsync(string phone, CancellationToken ct);
+        Task<List<Member>> GetAllAsync(CancellationToken ct = default);
     }
 }

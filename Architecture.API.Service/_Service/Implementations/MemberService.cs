@@ -51,8 +51,22 @@ namespace Architecture.API.Service._Service.Implementations
 
             return await _repo.GetByPhoneAsync(phone, ct);
         }
+        //全部搜尋
 
+        public async Task<List<MemberDto>> GetAllAsync(CancellationToken ct = default)
+        {
+            var members = await _repo.GetAllAsync(ct);
 
+            return members.Select(m => new MemberDto
+            {
+                Id = m.Id,
+                Name = m.Name,
+                Phone = m.Phone,
+                Tel = m.Tel,
+                Gender = m.Gender,
+                Birthday = m.Birthday
+            }).ToList();
+        }
 
     }
 }

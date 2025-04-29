@@ -97,8 +97,14 @@ namespace Architecture.API.Controllers
                 return Content(HttpStatusCode.InternalServerError, new { message = ex.Message });
             }
         }
-
-
+        //搜尋全部
+        [HttpGet]
+        [Route("all")]
+        public async Task<IHttpActionResult> GetAll(CancellationToken ct = default)
+        {
+            var members = await _service.GetAllAsync(ct);
+            return Ok(members); // ✅ 直接回傳 JSON 陣列
+        }
 
 
     }
