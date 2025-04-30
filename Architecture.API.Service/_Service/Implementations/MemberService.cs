@@ -68,5 +68,24 @@ namespace Architecture.API.Service._Service.Implementations
             }).ToList();
         }
 
+        public async Task UpdateAsync(MemberDto dto, CancellationToken ct = default)
+        {
+            var member = new Member
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Phone = dto.Phone,
+                Tel = dto.Tel,
+                Gender = dto.Gender,
+                Birthday = dto.Birthday
+            };
+            await _repo.UpdateAsync(member, ct);
+        }
+
+        public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+        {
+            await _repo.DeleteAsync(id, ct);
+        }
+
     }
 }

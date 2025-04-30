@@ -127,5 +127,49 @@ namespace Architecture.API.Repository._Repository.Implementations
             return list;
         }
 
+        public async Task UpdateAsync(Member member, CancellationToken ct = default)
+        {
+            const string sql = @"
+                    UPDATE Member
+                    SET Name = @Name, Phone = @Phone, Tel = @Tel, Gender = @Gender, Birthday = @Birthday
+                    WHERE Id = @Id";
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                await conn.OpenAsync(ct);
+
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", member.Id);
+                    cmd.Parameters.AddWithValue("@Name", member.Name);
+                    cmd.Parameters.AddWithValue("@Phone", member.Phone);
+                    cmd.Parameters.AddWithValue("@Tel", (object)member.Tel ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Gender", member.Gender);
+                    cmd.Parameters.AddWithValue("@Birthday", member.Birthday);
+
+                    await cmd.ExecuteNonQueryAsync(ct);
+                }
+            }
+        }
+
+        public async Task DeleteAsync(Guid id, CancellationToken ct = default)
+        {
+            const string sql = "DELETE FROM Member WHERE Id = @Id";
+
+            using (var conn = new SqlConnection(_connStr))
+            {
+                await conn.OpenAsync(ct);
+
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    await cmd.ExecuteNonQueryAsync(ct);
+                }
+            }
+        }
+
+
+
+
     }
 }

@@ -106,6 +106,37 @@ namespace Architecture.API.Controllers
             return Ok(members); // ✅ 直接回傳 JSON 陣列
         }
 
+        //
+        [HttpPost]
+        [Route("update")]
+        public async Task<IHttpActionResult> Update(MemberDto dto, CancellationToken ct = default)
+        {
+            try
+            {
+                await _service.UpdateAsync(dto, ct);
+                return Ok(new { message = "更新成功" });
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, new { message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Route("delete")]
+        public async Task<IHttpActionResult> Delete(IdDto dto, CancellationToken ct = default)
+        {
+            try
+            {
+                await _service.DeleteAsync(dto.Id, ct);
+                return Ok(new { message = "刪除成功" });
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, new { message = ex.Message });
+            }
+        }
+
 
     }
 }

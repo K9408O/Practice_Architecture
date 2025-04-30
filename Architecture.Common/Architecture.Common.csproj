@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\IdDto.cs" />
     <Compile Include="DTO\MemberDto.cs" />
     <Compile Include="DTO\RegisterDto.cs" />
     <Compile Include="DTO\SearchDto.cs" />

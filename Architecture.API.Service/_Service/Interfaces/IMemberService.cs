@@ -15,7 +15,8 @@ namespace Architecture.API.Service._Service.Interfaces
         Task<Member> GetByPhoneAsync(string phone, CancellationToken ct = default);
         Task<Guid> RegisterAsync(RegisterDto dto, CancellationToken ct = default);
 
-
+        Task UpdateAsync(MemberDto dto, CancellationToken ct = default);
+        Task DeleteAsync(Guid id, CancellationToken ct = default);
 
     }
 }
