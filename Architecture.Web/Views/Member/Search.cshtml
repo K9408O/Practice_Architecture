@@ -5,13 +5,13 @@
 <form id="searchForm">
     <!-- 查詢全部會員按鈕 -->
     <button id="btnLoadAll" class="btn btn-primary mt-3">查詢全部會員</button>
+    <hr />
 
     <div>
         <label>手機：</label>
         <input type="text" id="Phone" name="Phone" maxlength="10" />
     </div>
     <button type="submit" class="btn btn-primary">查詢</button>
-
 </form>
 
 <div id="searchResult" class="mt-3"></div>
@@ -63,6 +63,20 @@
                     <div>性別：${member.Gender}</div>
                     <div>生日：${member.Birthday ? member.Birthday.split('T')[0] : '無資料'}</div>
                 `).css('color', 'black');
+            },
+            statusCode: {
+                404: function () {
+                    // 當後端回 404 NotFound 時
+                    $('#searchResult')
+                        .html('<div>查無此會員</div>')
+                        .css('color', 'red');
+                }
+            },
+            error: function (xhr) {
+                // 其他錯誤
+                if (xhr.status !== 404) {
+                    alert('查詢失敗，請稍後再試');
+                }
             }
         });
     });
