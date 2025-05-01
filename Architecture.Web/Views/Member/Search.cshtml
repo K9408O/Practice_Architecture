@@ -30,9 +30,9 @@
         <!-- 這裡放動態生成的會員資料 -->
     </tbody>
 </table>
-<!-- ✅ Modal 用來編輯會員資料 -->
-<!-- ✅ 編輯 Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+
+<!-- 編輯 Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="editForm">
@@ -42,22 +42,39 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="editId">
-                    <input type="text" class="form-control mb-2" id="editName" placeholder="姓名">
-                    <input type="text" class="form-control mb-2" id="editPhone" placeholder="手機">
-                    <input type="text" class="form-control mb-2" id="editTel" placeholder="市話">
-                    <select class="form-select mb-2" id="editGender">
-                        <option value="M">男</option>
-                        <option value="F">女</option>
-                    </select>
-                    <input type="date" class="form-control" id="editBirthday">
+                    <div class="mb-2">
+                        <label>姓名</label>
+                        <input type="text" class="form-control" id="editName">
+                    </div>
+                    <div class="mb-2">
+                        <label>手機</label>
+                        <input type="text" class="form-control" id="editPhone">
+                    </div>
+                    <div class="mb-2">
+                        <label>市話</label>
+                        <input type="text" class="form-control" id="editTel">
+                    </div>
+                    <div class="mb-2">
+                        <label>性別</label>
+                        <select class="form-select" id="editGender">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label>生日</label>
+                        <input type="date" class="form-control" id="editBirthday">
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">儲存</button>
+                    <button type="submit" class="btn btn-primary">儲存變更</button>
                 </div>
             </form>
         </div>
     </div>
-</div>@section scripts {
+</div>
+
+@section scripts {
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -83,12 +100,12 @@
                         const birthdayText = member.birthday ? member.birthday.split('T')[0] : '無資料';
 
                         $('#searchResult').html(`
-                            <div>姓名：${member.Name}</div>
-                            <div>手機：${member.Phone}</div>
-                            <div>市話：${member.Tel || ''}</div>
-                            <div>性別：${member.Gender}</div>
-                            <div>生日：${member.Birthday ? member.Birthday.split('T')[0] : '無資料'}</div>
-                        `).css('color', 'black');
+                                <div>姓名：${member.Name}</div>
+                                <div>手機：${member.Phone}</div>
+                                <div>市話：${member.Tel || ''}</div>
+                                <div>性別：${member.Gender}</div>
+                                <div>生日：${member.Birthday ? member.Birthday.split('T')[0] : '無資料'}</div>
+                            `).css('color', 'black');
                     },
                     statusCode: {
                         404: function () {
@@ -120,22 +137,22 @@
                         } else {
                             members.forEach(function (m) {
                                 rows += `
-                                            <tr data-id="${m.Id}"
-                                            data-name="${m.Name}"
-                                            data-phone="${m.Phone}"
-                                            data-tel="${m.Tel}"
-                                            data-gender="${m.Gender}"
-                                            data-birthday="${m.Birthday ? m.Birthday.substring(0, 10) : ''}">
-                                            <td>${m.Name}</td>
-                                            <td>${m.Phone}</td>
-                                            <td>${m.Tel || ''}</td>
-                                            <td>${m.Gender}</td>
-                                            <td>${m.Birthday ? m.Birthday.substring(0, 10) : ''}</td>
-                                            <td>
-                                                <button class="btn btn-sm btn-warning btn-edit">編輯</button>
-                                                <button class="btn btn-sm btn-danger btn-delete">刪除</button>
-                                            </td>
-                                        </tr>`;
+                                                <tr data-id="${m.Id}"
+                                                data-name="${m.Name}"
+                                                data-phone="${m.Phone}"
+                                                data-tel="${m.Tel}"
+                                                data-gender="${m.Gender}"
+                                                data-birthday="${m.Birthday ? m.Birthday.substring(0, 10) : ''}">
+                                                <td>${m.Name}</td>
+                                                <td>${m.Phone}</td>
+                                                <td>${m.Tel || ''}</td>
+                                                <td>${m.Gender}</td>
+                                                <td>${m.Birthday ? m.Birthday.substring(0, 10) : ''}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-warning btn-edit">編輯</button>
+                                                    <button class="btn btn-sm btn-danger btn-delete">刪除</button>
+                                                </td>
+                                            </tr>`;
                             });
                         }
                         $('#allMembersBody').html(rows);
@@ -168,48 +185,61 @@
             });
         });
         //編輯
-        $(function () {
-            // 綁定按鈕，開啟 modal 並帶入資料
-            $(document).on('click', '.btn-edit', function () {
-                const $tr = $(this).closest('tr');
-                $('#editId').val($tr.data('id'));
-                $('#editName').val($tr.data('name'));
-                $('#editPhone').val($tr.data('phone'));
-                $('#editTel').val($tr.data('tel'));
-                $('#editGender').val($tr.data('gender'));
-                $('#editBirthday').val($tr.data('birthday'));
-
-                const modal = new bootstrap.Modal(document.getElementById('editModal'));
-                modal.show();
+        // 開啟編輯 Modal 並帶入資料
+        $(document).on('click', '.btn-edit', function () {
+            var $tr = $(this).closest('tr');
+            // 只對前 5 欄（姓名、手機、市話、性別、生日）轉成輸入框
+            $tr.find('td').each(function (i) {
+                if (i < 5) {
+                    var txt = $(this).text().trim();
+                    $(this).html('<input type="text" class="form-control form-control-sm" value="' + txt + '">');
+                }
             });
+            // 按鈕文字、樣式改為「保存」
+            $(this)
+                .text('保存')
+                .removeClass('btn-warning btn-edit')
+                .addClass('btn-success btn-save');
+        });
 
-            // 表單送出
-            $('#editForm').on('submit', function (e) {
-                e.preventDefault();
-                const dto = {
-                    id: $('#editId').val(),
-                    name: $('#editName').val(),
-                    phone: $('#editPhone').val(),
-                    tel: $('#editTel').val(),
-                    gender: $('#editGender').val(),
-                    birthday: $('#editBirthday').val()
-                };
-
-                $.ajax({
-                    url: 'https://localhost:44362/api/member/update',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(dto),
-                    success: function (res) {
-                        alert(res.message || '更新成功');
-                        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-                        // 若需要，這裡可以呼叫 $('#btnLoadAll').click();
-                    },
-                    error: function (xhr) {
-                        alert(xhr.responseJSON?.message || '更新失敗');
-                    }
-                });
+        // 3. 新增保存資料邏輯
+        $(document).on('click', '.btn-save', function () {
+            var $btn = $(this);
+            var $tr = $btn.closest('tr');
+            // 從輸入框取值
+            var dto = {
+                id: $tr.data('id'),
+                name: $tr.find('td:eq(0) input').val(),
+                phone: $tr.find('td:eq(1) input').val(),
+                tel: $tr.find('td:eq(2) input').val(),
+                gender: $tr.find('td:eq(3) input').val(),
+                birthday: $tr.find('td:eq(4) input').val()
+            };
+            // 呼叫更新 API
+            $.ajax({
+                url: 'https://localhost:44362/api/member/update',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(dto),
+                success: function (res) {
+                    // 更新成功後，把欄位還原為純文字
+                    $tr.find('td:eq(0)').text(dto.name);
+                    $tr.find('td:eq(1)').text(dto.phone);
+                    $tr.find('td:eq(2)').text(dto.tel);
+                    $tr.find('td:eq(3)').text(dto.gender);
+                    $tr.find('td:eq(4)').text(dto.birthday);
+                    // 按鈕還原成「編輯」
+                    $btn
+                        .text('編輯')
+                        .removeClass('btn-success btn-save')
+                        .addClass('btn-warning btn-edit');
+                },
+                error: function () {
+                    alert('更新失敗，請稍後再試');
+                }
             });
         });
+
+
     </script>
 }
