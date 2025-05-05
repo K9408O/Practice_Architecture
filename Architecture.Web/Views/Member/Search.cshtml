@@ -79,14 +79,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         (function () {
-            const apiBase = 'https://localhost:44362'; // 改成你的 API URL
+            /*const apiBase = 'https://localhost:44362'; */
 
             $('#searchForm').on('submit', function (e) {
                 e.preventDefault();
                 const phone = $('#Phone').val().trim();
                 console.log("送出的 Phone：", phone);
                 $.ajax({
-                    url: `${apiBase}/api/member/search`,
+                    url: `/member/search`,
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ phone: phone }),
@@ -128,7 +128,7 @@
         $(function () {
             $('#btnLoadAll').click(function () {
                 $.ajax({
-                    url: 'https://localhost:44362/api/member/all', // ✅ API 地址
+                    url: '/member/all',
                     type: 'GET',
                     success: function (members) {
                         var rows = '';
@@ -171,7 +171,7 @@
             if (!confirm('確定要刪除這筆會員嗎？')) return;
 
             $.ajax({
-                url: 'https://localhost:44362/api/member/delete',
+                url: '/member/delete',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ id: id }),
@@ -217,7 +217,7 @@
             };
             // 呼叫更新 API
             $.ajax({
-                url: 'https://localhost:44362/api/member/update',
+                url: '/member/update',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(dto),
